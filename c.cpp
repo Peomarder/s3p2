@@ -25,8 +25,8 @@ server_addr.sin_family = AF_INET;
 server_addr.sin_port = htons(7432);
 string ipcon = "";
 cout << "\nEnter ip: ";
-cin > ipcon; //"127.0.0.1"
-inet_pton(AF_INET, ipcon, &server_addr.sin_addr);
+cin >> ipcon; //"127.0.0.1"
+inet_pton(AF_INET, ipcon.c_str(), &server_addr.sin_addr);
 
 // Connect to server
 if (connect(client_fd, (struct sockaddr*)&server_addr, server_len) < 0) {
