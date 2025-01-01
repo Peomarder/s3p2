@@ -40,8 +40,7 @@ int main() {
     gethostname(hostBuffer, sizeof(hostBuffer));
     struct hostent *host_entry = gethostbyname(hostBuffer);
     char *serverIP = inet_ntoa(*((struct in_addr*)host_entry->h_addr_list[0]));
-    std::cout << "Server IP: " << serverIP << "
-PORT: " << PORT << std::endl;
+    std::cout << "Server IP: " << serverIP << "\nPORT: " << PORT << std::endl;
 
     sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
