@@ -1,3 +1,5 @@
+#include <net/if.h>
+#include <sys/ioctl.h>
 #include <iostream>
 #include <string>
 #include <sys/socket.h>
@@ -41,6 +43,15 @@ serverAddress.sin_addr.s_addr = INADDR_ANY;
 serverAddress.sin_port = htons(PORT);
 
 std::cout << "Server PORT: " << PORT << std::endl;
+
+struct ifreq ifr;
+ifr.ifr_addr.sa_family = AF_INET;
+strncpy(ifr.ifr_name, "eth0", IFNAMSIZ-1);
+ioctl(serverSocket, SIOCGIFADDR, &ifr);
+
+std::cout << "Server IP: " 
+<< inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr) 
+<< std::endl;
 
 if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
 std::cout << "Binding failed" << std::endl;
