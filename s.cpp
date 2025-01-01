@@ -39,8 +39,10 @@ return testBackendFunction(username, password, message);
 
 
 void handleClient(int clientSocket) {
+	
+	cout<<"\nHandling...";
     char buffer[1024] = {0};
-    recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
+	read(clientSocket, buffer, 1024);
     
     {
         std::lock_guard<std::mutex> lock(mtx);
@@ -141,7 +143,7 @@ while (true) {
                   << inet_ntoa(clientAddress.sin_addr)
                   << ":" << ntohs(clientAddress.sin_port) << std::endl;
     }
-
+	cout<<"\nDetaching...";
     std::thread clientThread(handleClient, clientSocket);
     clientThread.detach();
 }
