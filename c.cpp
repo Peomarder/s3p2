@@ -21,7 +21,10 @@ return -1;
 // Set server address
 server_addr.sin_family = AF_INET;
 server_addr.sin_port = htons(7432);
-inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr);
+string ipcon = "";
+cout << "\nEnter ip: ";
+cin > ipcon; //"127.0.0.1"
+inet_pton(AF_INET, ipcon, &server_addr.sin_addr);
 
 // Connect to server
 if (connect(client_fd, (struct sockaddr*)&server_addr, server_len) < 0) {
