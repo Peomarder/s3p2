@@ -1,3 +1,4 @@
+#include <cstring>
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <iostream>
