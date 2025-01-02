@@ -45,7 +45,7 @@ std::cout << endl << "Handling client in thread..." << std::endl;
 
 while(true) {
 char buffer[1024] = {0};
-int bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
+int bytesRead = read(clientSocket, buffer, 1024);
 
 if(bytesRead <= 0) {
 std::lock_guard<std::mutex> lock(mtx);
@@ -60,6 +60,7 @@ std::cout << "Received: " << buffer << std::endl;
 
 std::string response = processRequest(buffer);
 send(clientSocket, response.c_str(), response.length(), 0);
+cout << "\nsent reply.";
 }
 
 close(clientSocket);
