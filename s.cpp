@@ -37,23 +37,34 @@ std::string message = req.substr(secondSpace + 1);
 return testBackendFunction(username, password, message);
 }
 
-
 void handleClient(int clientSocket) {
-	
-	cout<<"\nHandling...";
-    char buffer[1024] = {0};
-	read(clientSocket, buffer, 1024);
-    
-    {
-        std::lock_guard<std::mutex> lock(mtx);
-        std::cout << "Received: " << buffer << std::endl;
-    }
-
-    std::string response = processRequest(buffer);
-    send(clientSocket, response.c_str(), response.length(), 0);
-    close(clientSocket);
+{
+std::lock_guard<std::mutex> lock(mtx);
+std::cout << "
+Handling client in thread..." << std::endl;
 }
 
+while(true) {
+char buffer[1024] = {0};
+int bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
+
+if(bytesRead <= 0) {
+std::lock_guard<std::mutex> lock(mtx);
+std::cout << "Client disconnected" << std::endl;
+break;
+}
+
+{
+std::lock_guard<std::mutex> lock(mtx);
+std::cout << "Received: " << buffer << std::endl;
+}
+
+std::string response = processRequest(buffer);
+send(clientSocket, response.c_str(), response.length(), 0);
+}
+
+close(clientSocket);
+}
 
 int main() {
 const int PORT = 7432;
@@ -142,8 +153,8 @@ while (true) {
         std::cout << "New connection from: "
                   << inet_ntoa(clientAddress.sin_addr)
                   << ":" << ntohs(clientAddress.sin_port) << std::endl;
+		cout<<"\nDetaching...";
     }
-	cout<<"\nDetaching...";
     std::thread clientThread(handleClient, clientSocket);
     clientThread.detach();
 }
