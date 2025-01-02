@@ -45,7 +45,7 @@ break;
 }
 
 // Send message to server
-send(client_fd, message, strlen(message), 0);
+send(client_fd, message, strlen(message), MSG_WAITALL);
 
 // Receive reply from server
 read(client_fd, reply, 1024);
