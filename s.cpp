@@ -40,8 +40,7 @@ return testBackendFunction(username, password, message);
 void handleClient(int clientSocket) {
 {
 std::lock_guard<std::mutex> lock(mtx);
-std::cout << "
-Handling client in thread..." << std::endl;
+std::cout << endl << "Handling client in thread..." << std::endl;
 }
 
 while(true) {
@@ -90,6 +89,9 @@ ioctl(serverSocket, SIOCGIFADDR, &ifr);
 std::cout << "Server IP: " 
 << inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr) 
 << std::endl;
+
+int reuseAddr = 1;
+setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuseAddr, sizeof(reuseAddr));
 
 if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
 std::cout << "Binding failed" << std::endl;
