@@ -40,16 +40,19 @@ return testBackendFunction(username, password, message);
 void handleClient(int clientSocket) {
 {
 std::lock_guard<std::mutex> lock(mtx);
-std::cout << endl << "Handling client in thread..." << std::endl;
+std::cout << "Handling client in thread... Socket: " << clientSocket << std::endl;
 }
 
 while(true) {
+std::cout << "Waiting for message..." << std::endl;  // Debug print
 char buffer[1024] = {0};
 int bytesRead = read(clientSocket, buffer, 1024);
 
+std::cout << "Bytes read: " << bytesRead << std::endl;  // Debug print
+
 if(bytesRead <= 0) {
 std::lock_guard<std::mutex> lock(mtx);
-std::cout << "Client disconnected" << std::endl;
+std::cout << "Client disconnected (bytes: " << bytesRead << ")" << std::endl;
 break;
 }
 
@@ -59,8 +62,8 @@ std::cout << "Received: " << buffer << std::endl;
 }
 
 std::string response = processRequest(buffer);
+std::cout << "Sending response..." << std::endl;  // Debug print
 send(clientSocket, response.c_str(), response.length(), 0);
-cout << "\nsent reply.";
 }
 
 close(clientSocket);
@@ -158,6 +161,7 @@ while (true) {
                   << ":" << ntohs(clientAddress.sin_port) << std::endl;
 		cout<<"\nDetaching...";
     }
+	std::cout << "Handling client in thread... Socket: " << clientSocket << std::endl;
     std::thread clientThread(handleClient, clientSocket);
     clientThread.detach();
 }
