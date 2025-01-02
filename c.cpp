@@ -45,7 +45,9 @@ break;
 }
 
 // Send message to server
-send(client_fd, message, strlen(message), MSG_WAITALL);
+char paddedMessage[1024] = {0};  // Create padded buffer
+strcpy(paddedMessage, message);   // Copy message into it
+send(client_fd, paddedMessage, 1024, MSG_WAITALL);  // Send full buffer
 
 // Receive reply from server
 read(client_fd, reply, 1024);
