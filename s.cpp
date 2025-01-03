@@ -105,6 +105,19 @@ return -1;
 listen(serverSocket, 5);
 std::cout << "Server is listening..." << std::endl;
 
+// После bind() добавим:
+char actualIP[INET_ADDRSTRLEN];
+struct sockaddr_in actualAddr;
+socklen_t len = sizeof(actualAddr);
+
+if (getsockname(server_fd, (struct sockaddr*)&actualAddr, &len) == -1) {
+    std::cout << "Failed to get socket address" << std::endl;
+    return -1;
+}
+
+inet_ntop(AF_INET, &(actualAddr.sin_addr), actualIP, INET_ADDRSTRLEN);
+std::cout << "Server is listening on IP: " << actualIP << std::endl;
+
 /*
 while (true) {
 sockaddr_in clientAddress;
