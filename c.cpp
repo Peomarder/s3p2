@@ -38,6 +38,8 @@ std::cout << "Connected to server..." << std::endl;
 
 while (true) {
 std::cout << "Enter message (or QUIT to exit): ";
+std::cin.clear();  // Clear any error flags
+std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // Clear buffer
 std::cin.getline(message, 1024);
 
 if (std::string(message) == "QUIT") {
