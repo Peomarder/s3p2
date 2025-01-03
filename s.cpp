@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <unistd.h>
 #include <fstream>
 #include <cstring>
@@ -105,12 +106,31 @@ return -1;
 listen(serverSocket, 5);
 std::cout << "Server is listening..." << std::endl;
 
-// После bind() добавим:
+/// ///////////
+
+// Получим IP
 char actualIP[INET_ADDRSTRLEN];
 struct sockaddr_in actualAddr;
 socklen_t len = sizeof(actualAddr);
 
-if (getsockname(server_fd, (struct sockaddr*)&actualAddr, &len) == -1) {
+
+char hostname[1024];
+gethostname(hostname, 1024);
+std::cout << "Hostname: " << hostname << std::endl;
+
+
+hostent* he;
+he = gethostbyname(hostname);  // hostname - имя вашей машины
+
+if (he == NULL) {
+    std::cout << "Failed to get host name" << std::endl;
+    return -1;
+}
+
+char* ip = inet_ntoa(*(struct in_addr*)he->h_addr_list[0]);
+std::cout << "Server is listening on IP: " << ip << std::endl;
+
+if (getsockname(serverSocket, (struct sockaddr*)&actualAddr, &len) == -1) {
     std::cout << "Failed to get socket address" << std::endl;
     return -1;
 }
@@ -118,44 +138,7 @@ if (getsockname(server_fd, (struct sockaddr*)&actualAddr, &len) == -1) {
 inet_ntop(AF_INET, &(actualAddr.sin_addr), actualIP, INET_ADDRSTRLEN);
 std::cout << "Server is listening on IP: " << actualIP << std::endl;
 
-/*
-while (true) {
-sockaddr_in clientAddress;
-socklen_t clientLength = sizeof(clientAddress);
-int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientLength);
-
- if (clientSocket == -1)
-        {
-            cerr << "Error occurred while connecting to client!" << endl;
-            continue;
-        }
-
-
-std::cout << "New connection from: "
-<< inet_ntoa(clientAddress.sin_addr)
-<< ":" << ntohs(clientAddress.sin_port) << std::endl;
-
-/*
-        {
-            lock_guard<mutex> lg(mtx);
-            cout << "Client connected!" << endl;
-        }
-
-        // Создаем поток для каждого клиента, чтобы обеспечить многопоточность
-        thread clientThread(handleClient, clientSocket);
-        clientThread.detach(); // Отсоединяем поток для независимой обработки клиента
-    }
-
-
-char buffer[1024] = {0};
-read(clientSocket, buffer, 1024);
-std::cout << "Received: " << buffer << std::endl;
-
-std::string response = processRequest(buffer);
-send(clientSocket, response.c_str(), response.length(), 0);
-close(clientSocket);
-}
-*/
+/// /////////////////
 
 while (true) {
     sockaddr_in clientAddress;
