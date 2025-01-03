@@ -924,7 +924,7 @@ cout << tables->at(i,j) << " "<<i<<"+"<<j<<" ";
 cout << endl;
 }*/
 
-if(argv[0]=="newdb"){
+if(query=="newdb"){
 createDatabaseStructure(name, tables, tuplesLimit);
 initializeDatabase();
 return "\nnewdb was created";
@@ -962,7 +962,7 @@ for (int i = 0; i < argc; i++){
 //getline(cin, query);
 //cout << "\nQUERY:" <<query<<endl<<endl;
 if (query == "quit"||query == "exit") {
-return 1;
+return "1";
 }
 /*
 if (query == "b") {
@@ -1030,7 +1030,7 @@ size_t valuesEnd = query.find(")", valuesStart);
 
 if (valuesStart == string::npos || valuesEnd == string::npos) {
 cout << "Invalid query: Malformed VALUES clause\n";
-return -1;
+return "-1";
 }
 
 string valuesString = query.substr(valuesStart + 1, valuesEnd - valuesStart - 1);
@@ -1073,7 +1073,7 @@ whereClause = query.substr(wherePos + 6);
 
 if (tableName.empty() || whereClause.empty()) {
 cout << "Invalid query: Malformed DELETE statement\n";
-return -1;
+return "-1";
 }
 
 cout << "\nTable: " << tableName << "\nWHERE clause: " << whereClause << "\n";
