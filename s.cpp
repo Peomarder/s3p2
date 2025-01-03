@@ -19,7 +19,7 @@ using namespace std;
 std::mutex mtx;
 
 std::string testBackendFunction(const std::string& username, const std::string& password, const std::string& message) {
-return "User: " + username + " sent message: " + message;
+return "User: " + username + " sent message: \n" + subp(message);
 }
 
 std::string processRequest(const char* request) {
@@ -135,8 +135,6 @@ if (getsockname(serverSocket, (struct sockaddr*)&actualAddr, &len) == -1) {
     return -1;
 }
 
-inet_ntop(AF_INET, &(actualAddr.sin_addr), actualIP, INET_ADDRSTRLEN);
-std::cout << "Server is listening on IP: " << actualIP << std::endl;
 
 /// /////////////////
 
