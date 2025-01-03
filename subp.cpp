@@ -1083,7 +1083,7 @@ deleteRecords(tableName, whereClause);
 }
 
 
-//}
+//
 delete tables;
 
 
@@ -1098,4 +1098,5 @@ catch (const exception& error) {
 cout << "\nError: " << error.what() << endl;
 }
 
+return "normal";
 }
