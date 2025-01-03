@@ -1,0 +1,11 @@
+﻿{
+"name": "scheme1",
+"tuples_limit": 4,
+"structure": {
+"Pets": ["name", "type"],
+"Fruits": ["name", "color", "taste"],
+"Cars": ["make", "model", "year", "color"],
+"b2": ["e1", "e2", "e3", "e4"],
+"FairlyLongNameForATableMoreCharactersMoreCharacters": ["this","that"]
+}
+}
