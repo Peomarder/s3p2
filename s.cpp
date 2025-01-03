@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <fstream>
 #include <cstring>
+#include "subp.h"
+
 
 #include <thread>
 #include <mutex>
@@ -19,6 +21,7 @@ using namespace std;
 std::mutex mtx;
 
 std::string testBackendFunction(const std::string& username, const std::string& password, const std::string& message) {
+	cout<<"\n test";
 return "User: " + username + " sent message: \n" + subp(message);
 }
 
