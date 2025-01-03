@@ -897,9 +897,13 @@ insertNewRecord("b2", data);
 }
 
 
-int main(int argc, char* argv[]) {
+int subp(string query) { //mesglen mesg
 try {
-freopen("output.txt", "w", stdout); //who the hell needs to rewrite all the code amirite?
+//freopen("output.txt", "w", stdout); //who the hell needs to rewrite all the code amirite?
+stringstream buffer;
+streambuf* old_stdout = cout.rdbuf(buffer.rdbuf());
+
+
 
 string choi="";
 arrr* arr = new arrr;
@@ -910,7 +914,7 @@ File.open("schema.json");
 	throw runtime_error("Failed to open file: " );
 	}
 	 readJSONSchemaIntoStructures("schema.json");
-
+/*
 cout << tables->numCols;
 cout << "Pushed values: ";
 for (int i = 0; i < tables->numRows; ++i) {
@@ -918,12 +922,12 @@ for (int j = 0; j < tables->numCols; ++j) {
 cout << tables->at(i,j) << " "<<i<<"+"<<j<<" ";
 }
 cout << endl;
-}
+}*/
 
 if(argv[0]=="newdb"){
 createDatabaseStructure(name, tables, tuplesLimit);
 initializeDatabase();
-return 3;
+return "\nnewdb was created";
 }
 /*cout<<"\n Create a new database? Y/N\n";
 getline(cin, choi);
@@ -944,18 +948,18 @@ if(choi=="y"){
 */
 //printAllTablesAndValues("scheme1");
 
-
+/*
 string query = "";
 
 for (int i = 0; i < argc; i++){
 	query = query + " " +argv[i];
 	
 	query = query.substr(1);
-}
+}*/
 
 //while (true) {
 //cout << "Enter your query (or 'quit' to exit): ";
-getline(cin, query);
+//getline(cin, query);
 //cout << "\nQUERY:" <<query<<endl<<endl;
 if (query == "quit"||query == "exit") {
 return 1;
@@ -986,7 +990,7 @@ size_t wherePos = query.find("WHERE"); //must have spaces
 
 if (fromPos == string::npos) {
 cout << "Invalid query: Missing FROM clause\n";
-return -1;
+return "Invalid query: Missing FROM clause\n";
 }
 
 string columns = query.substr(7, fromPos - 8);
@@ -1015,7 +1019,7 @@ size_t tableNameEnd = query.find("VALUES");
 
 if (tableNameEnd == string::npos) {
 cout << "Invalid query: Missing VALUES clause\n";
-return -1;
+return "Invalid query: Missing VALUES clause\n";
 }
 
 tableName = query.substr(tableNameStart, tableNameEnd - tableNameStart);
@@ -1050,7 +1054,7 @@ string whereClause;
 
 if (query.substr(0, 11) != "DELETE FROM") {
 cout << "Invalid query: Must start with DELETE FROM\n";
-return -1;
+return "Invalid query: Must start with DELETE FROM\n";
 }
 
 size_t tableNameStart = 12;
@@ -1058,7 +1062,7 @@ size_t wherePos = query.find("WHERE");
 
 if (wherePos == string::npos) {
 cout << "Invalid query: Missing WHERE clause\n";
-return -1;
+return "Invalid query: Missing WHERE clause\n";
 }
 
 tableName = query.substr(tableNameStart, wherePos - tableNameStart - 1);
@@ -1085,7 +1089,10 @@ delete tables;
 
 
 cout << "Program completed successfully. " << endl;
-exit(0);
+
+cout.rdbuf(old_stdout);
+string result = buffer.str();
+return result;
 }
 catch (const exception& error) {
 cout << "\nError: " << error.what() << endl;
