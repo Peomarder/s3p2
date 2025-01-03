@@ -897,7 +897,7 @@ insertNewRecord("b2", data);
 }
 
 
-int subp(string query) { //mesglen mesg
+string subp(string query) { //mesglen mesg
 try {
 //freopen("output.txt", "w", stdout); //who the hell needs to rewrite all the code amirite?
 stringstream buffer;
