@@ -10,63 +10,61 @@
 #include <fstream>
 #include <cstring>
 #include "subp.h"
-
-
 #include <thread>
 #include <mutex>
 
 
 using namespace std;
 
-std::mutex mtx;
+mutex mtx;
 
-std::string testBackendFunction(const std::string& username, const std::string& password, const std::string& message) {
+string testBackendFunction(const string& username, const string& password, const string& message) {
 	cout<<"\n test";
 return "User: " + username + " sent message: \n" + subp(message);
 }
 
-std::string processRequest(const char* request) {
-std::string req(request);
+string processRequest(const char* request) {
+string req(request);
 size_t firstSpace = req.find(' ');
 size_t secondSpace = req.find(' ', firstSpace + 1);
 
-if(firstSpace == std::string::npos || secondSpace == std::string::npos) {
+if(firstSpace == string::npos || secondSpace == string::npos) {
 return "Invalid format";
 }
 
-std::string username = req.substr(0, firstSpace);
-std::string password = req.substr(firstSpace + 1, secondSpace - firstSpace - 1);
-std::string message = req.substr(secondSpace + 1);
+string username = req.substr(0, firstSpace);
+string password = req.substr(firstSpace + 1, secondSpace - firstSpace - 1);
+string message = req.substr(secondSpace + 1);
 
 return testBackendFunction(username, password, message);
 }
 
 void handleClient(int clientSocket) {
 {
-std::lock_guard<std::mutex> lock(mtx);
-std::cout << "Handling client in thread... Socket: " << clientSocket << std::endl;
+lock_guard<mutex> lock(mtx);
+cout << "Handling client in thread... Socket: " << clientSocket << endl;
 }
 
 while(true) {
-std::cout << "Waiting for message..." << std::endl;  // Debug print
+cout << "Waiting for message..." << endl;  // Debug print
 char buffer[1024] = {0};
 int bytesRead = read(clientSocket, buffer, 1024);
 
-std::cout << "Bytes read: " << bytesRead << std::endl;  // Debug print
+cout << "Bytes read: " << bytesRead << endl;  // Debug print
 
 if(bytesRead <= 0) {
-std::lock_guard<std::mutex> lock(mtx);
-std::cout << "Client disconnected (bytes: " << bytesRead << ")" << std::endl;
+lock_guard<mutex> lock(mtx);
+cout << "Client disconnected (bytes: " << bytesRead << ")" << endl;
 break;
 }
 
 {
-std::lock_guard<std::mutex> lock(mtx);
-std::cout << "Received: " << buffer << std::endl;
+lock_guard<mutex> lock(mtx);
+cout << "Received: " << buffer << endl;
 }
 
-std::string response = processRequest(buffer);
-std::cout << "Sending response..." << std::endl;  // Debug print
+string response = processRequest(buffer);
+cout << "Sending response..." << endl;  // Debug print
 send(clientSocket, response.c_str(), response.length(), 0);
 }
 
@@ -78,7 +76,7 @@ const int PORT = 7432;
 int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
 if (serverSocket < 0) {
-std::cout << "Socket creation failed" << std::endl;
+cout << "Socket creation failed" << endl;
 return -1;
 }
 
@@ -87,27 +85,27 @@ serverAddress.sin_family = AF_INET;
 serverAddress.sin_addr.s_addr = INADDR_ANY;
 serverAddress.sin_port = htons(PORT);
 
-std::cout << "Server PORT: " << PORT << std::endl;
+cout << "Server PORT: " << PORT << endl;
 
 struct ifreq ifr;
 ifr.ifr_addr.sa_family = AF_INET;
 strncpy(ifr.ifr_name, "eth0", IFNAMSIZ-1);
 ioctl(serverSocket, SIOCGIFADDR, &ifr);
 
-std::cout << "Server IP: " 
+cout << "Server IP: " 
 << inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr) 
-<< std::endl;
+<< endl;
 
 int reuseAddr = 1;
 setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &reuseAddr, sizeof(reuseAddr));
 
 if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
-std::cout << "Binding failed" << std::endl;
+cout << "Binding failed" << endl;
 return -1;
 }
 
 listen(serverSocket, 5);
-std::cout << "Server is listening..." << std::endl;
+cout << "Server is listening..." << endl;
 
 /// ///////////
 
@@ -119,22 +117,22 @@ socklen_t len = sizeof(actualAddr);
 
 char hostname[1024];
 gethostname(hostname, 1024);
-std::cout << "Hostname: " << hostname << std::endl;
+cout << "Hostname: " << hostname << endl;
 
 
 hostent* he;
 he = gethostbyname(hostname);  // hostname - имя вашей машины
 
 if (he == NULL) {
-    std::cout << "Failed to get host name" << std::endl;
+    cout << "Failed to get host name" << endl;
     return -1;
 }
 
 char* ip = inet_ntoa(*(struct in_addr*)he->h_addr_list[0]);
-std::cout << "Server is listening on IP: " << ip << std::endl;
+cout << "Server is listening on IP: " << ip << endl;
 
 if (getsockname(serverSocket, (struct sockaddr*)&actualAddr, &len) == -1) {
-    std::cout << "Failed to get socket address" << std::endl;
+    cout << "Failed to get socket address" << endl;
     return -1;
 }
 
@@ -147,19 +145,19 @@ while (true) {
     int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddress, &clientLength);
 
     if (clientSocket == -1) {
-        std::cerr << "Error occurred while connecting to client!" << std::endl;
+        cerr << "Error occurred while connecting to client!" << endl;
         continue;
     }
 
     {
-        std::lock_guard<std::mutex> lock(mtx);
-        std::cout << "New connection from: "
+        lock_guard<mutex> lock(mtx);
+        cout << "New connection from: "
                   << inet_ntoa(clientAddress.sin_addr)
-                  << ":" << ntohs(clientAddress.sin_port) << std::endl;
+                  << ":" << ntohs(clientAddress.sin_port) << endl;
 		cout<<"\nDetaching...";
     }
-	std::cout << "Handling client in thread... Socket: " << clientSocket << std::endl;
-    std::thread clientThread(handleClient, clientSocket);
+	cout << "Handling client in thread... Socket: " << clientSocket << endl;
+    thread clientThread(handleClient, clientSocket);
     clientThread.detach();
 }
 
