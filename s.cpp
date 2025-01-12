@@ -18,8 +18,7 @@ using namespace std;
 
 mutex mtx;
 
-string testBackendFunction(const string& username, const string& password, const string& message) {
-	//cout<<"\n test";
+string BackendFunction(const string& username, const string& password, const string& message) {
 	return "User: " + username + " sent message: \n" + subp(message);
 }
 
@@ -36,7 +35,7 @@ string processRequest(const char* request) {
 	string password = req.substr(firstSpace + 1, secondSpace - firstSpace - 1);
 	string message = req.substr(secondSpace + 1);
 
-	return testBackendFunction(username, password, message);
+	return BackendFunction(username, password, message);
 }
 
 void handleClient(int clientSocket) {
@@ -108,8 +107,6 @@ int main() {
 	cout << "Server is listening..." << endl;
 
 	/// ///////////
-
-	// Получим IP
 	char actualIP[INET_ADDRSTRLEN];
 	struct sockaddr_in actualAddr;
 	socklen_t len = sizeof(actualAddr);
@@ -121,7 +118,7 @@ int main() {
 
 
 	hostent* he;
-	he = gethostbyname(hostname);  // hostname - имя вашей машины
+	he = gethostbyname(hostname); 
 
 	if (he == NULL) {
 		cout << "Failed to get host name" << endl;
