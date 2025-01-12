@@ -1,4 +1,5 @@
 #include <chrono>
+	#include <filesystem>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
@@ -90,11 +91,9 @@ arrr* get(size_t index) {
 
 void print(){
 	if (this->size>4000000){throw runtime_error("Overflow!");}
-	cout<<"\nPRINTING ARRAY SIZE "<<this->size<<"\n";
 	for (int j = 0; j < this->size+1; ++j) {
 	cout << this->get(j)->value<<" "<<j<<" ";
 	}
-	cout<<"\n ================== \n";
 	return;
 	}
 
@@ -251,7 +250,6 @@ struct arrr2d {
 	}
 
 	void print(){
-		cout<<"\n\t###PRINTING 2D ARRAY###\n";
 		for (int i = 0; i < this->numRows; ++i) {
 			for (int j = 0; j < this->numCols; ++j) {
 				try{
@@ -552,38 +550,6 @@ arrr* stringtoArrr(string data){ //also awesome
 	return result;
 }
 
-void printAllTablesAndValues(const string& schemaName) { //amazing
-fs::path schemaPath = schemaName;
-
-if (!fs::exists(schemaPath) || !fs::is_directory(schemaPath)) {
-cout << "Schema directory not found: " << schemaName << endl;
-return;
-}
-
-for (const auto& tableEntry : fs::directory_iterator(schemaPath)) {
-	if (fs::is_directory(tableEntry)) {
-	string tableName = tableEntry.path().filename().string();
-	cout << "Table: " << tableName << endl;
-	cout << "------------------------" << endl;
-
-	for (const auto& fileEntry : fs::directory_iterator(tableEntry)) {
-	if (fs::is_regular_file(fileEntry) && fileEntry.path().extension() == ".csv") {
-	ifstream csvFile(fileEntry.path());
-	if (csvFile.is_open()) {
-	string line;
-	while (getline(csvFile, line)) {
-	cout << line << endl;
-	}
-	csvFile.close();
-	cout << endl;
-	}
-	}
-	}
-	cout << endl;
-	}
-}
-}
-
 void trim(string& s) { 
 s.erase(s.begin(), find_if(s.begin(), s.end(), [](unsigned char ch) {
 return !isspace(ch);
@@ -689,18 +655,16 @@ columnList->push(column);
 }
 
 columnList->push("");
-	//cout<<"\n!COLUMN LIST!\n";
-	//columnList->print();
 	
 	result->setSize(columnList->size-1, 0);
 	istringstream tableStream(tableNames);
 	string tableName;
 	size_t k=0;
 	size_t rowIndex = 0;
-	cout<<tableNames;
+	//cout<<tableNames;
 while (getline(tableStream, tableName, ',')) {
 	trim(tableName);
-	cout<<"Cur t:"<<tableName<<endl;
+	//cout<<"Cur t:"<<tableName<<endl;
 	rowIndex = 0;
 	fs::path tablePath = fs::path(schemaName) / tableName;
 	fs::path lockFilePath = tablePath / (tableName + "_lock.txt");
@@ -730,9 +694,7 @@ while (getline(tableStream, tableName, ',')) {
 	while (getline(headerStream, header, ',')) {
 	headers->push(header);
 	} //tbh dc
-	//headers->print();
 	
-	//cout<<"5";
 	
 	while (getline(csvFile, line)) {
 			
@@ -748,7 +710,6 @@ while (getline(tableStream, tableName, ',')) {
 			
 			for (size_t j = 1; j < columnList->size+1; ++j) {
 			//	cout<<"8";
-			//	if ((columnList->get(j)->value.find('.') == string::npos)){break;}
 			string requestedTable = columnList->get(j)->value.substr(0, columnList->get(j)->value.find('.'));
 			//cout<<"S req t"<<requestedTable<<" \t";
 			string requestedColumn = columnList->get(j)->value.substr(columnList->get(j)->value.find('.') + 1);
@@ -768,7 +729,7 @@ while (getline(tableStream, tableName, ',')) {
 		
 			rowIndex++;
 			//resRow->popAll();
-			delete resRow;
+			//delete resRow;
 		}
 	csvFile.close();
 	//cout<<"C closing csv...\n";
@@ -779,18 +740,14 @@ while (getline(tableStream, tableName, ',')) {
 	}
 	//cout<<"Finished a table...\n";
 	//result->print();
-		cout<<"Intermediate result\n";
-		result->print();
-		//cout<<"#ARES#2\n";
 		actualresult->pushArray(result);
 		//actualresult->print();
 		result->setSize(columnList->size-1,1);
-		//cout<<"#NR";
 }
 //cout<<"R";
-cout<<actualresult->numCols<<" "<<actualresult->numRows<<endl;
+//cout<<actualresult->numCols<<" "<<actualresult->numRows;
 actualresult->print();
-return actualresult;//lol
+return actualresult;//lol why
 
 }
 
@@ -907,7 +864,6 @@ streambuf* old_stdout = cout.rdbuf(buffer.rdbuf());
 
 string choi="";
 arrr* arr = new arrr;
-cout << endl;
 ifstream File("schema.json", ios::binary);
 File.open("schema.json");
 	if (!File.is_open()) {
@@ -926,63 +882,14 @@ cout << endl;
 
 if(query=="newdb"){
 createDatabaseStructure(name, tables, tuplesLimit);
-initializeDatabase();
+//initializeDatabase();
 return "\nnewdb was created";
 }
-/*cout<<"\n Create a new database? Y/N\n";
-getline(cin, choi);
-if(choi=="y"||choi=="Y"){
-	createDatabaseStructure(name, tables, tuplesLimit);
-}
-	else if (choi=="n"||choi=="N"){}
-	else{cout<<"invalid input"; return -1;}
 
-cout<<"\n Initialize the database with default values? Y/N\n";
-choi="";
-getline(cin, choi);
-if(choi=="y"){
-	
-}
-	else if (choi=="n"){}
-	else{cout<<"invalid input"; return -1;}
-*/
-//printAllTablesAndValues("scheme1");
-
-/*
-string query = "";
-
-for (int i = 0; i < argc; i++){
-	query = query + " " +argv[i];
-	
-	query = query.substr(1);
-}*/
-
-//while (true) {
-//cout << "Enter your query (or 'quit' to exit): ";
-//getline(cin, query);
-//cout << "\nQUERY:" <<query<<endl<<endl;
 if (query == "quit"||query == "exit") {
 return "1";
 }
-/*
-if (query == "b") {
-query = "SELECT Pets.name FROM Pets";
-}
-if (query == "c") {
-query = "SELECT Pets.name,Pets.type FROM Pets";
-}
-if (query == "d") {
-query = "SELECT Pets.name,Pets.type FROM Pets WHERE Pets.name = 'Whiskers' OR Pets.name = 'Fido'";
-}
-if (query == "e") {
-query = "SELECT Pets.name,Pets.type FROM Pets WHERE Pets.name = 'Whiskers' AND Pets.name = 'Fido'";
-}
-if (query == "f") {
-query = "SELECT Pets.name,Pets.type FROM Pets,b2 WHERE b2.e1 = 'a'";
-}
-if (query == "g") {
-query = "SELECT Pets.name,Pets.type,Fruits.name FROM Pets,Fruits WHERE Fruits.taste = 'sour' OR Fruits.color = 'yellow'";
-}*/
+
 
 if (query.substr(0, 6) == "SELECT") {
 size_t fromPos = query.find("FROM");
@@ -1046,6 +953,7 @@ values->push(value);
 }
 //values->print();
  insertNewRecord(tableName,values);
+ return "insterted";
 }
 
 if (query.substr(0, 11) == "DELETE FROM") {
@@ -1079,16 +987,17 @@ return "-1";
 cout << "\nTable: " << tableName << "\nWHERE clause: " << whereClause << "\n";
 
 deleteRecords(tableName, whereClause);
+return "deleted records";
 
 }
 
 
 //
-delete tables;
+//delete tables;
 
 
 
-cout << "Program completed successfully. " << endl;
+//cout << "Program completed successfully. " << endl;
 
 cout.rdbuf(old_stdout);
 string result = buffer.str();
