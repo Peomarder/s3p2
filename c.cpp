@@ -35,7 +35,7 @@ int main() {
 	}
 
 	cout << "Connected to server..." << endl;
-
+	bool firstRun = true;
 	while (true) {
 		cout << "Enter message (or QUIT to exit): ";
 		if (firstRun) {
