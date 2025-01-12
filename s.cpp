@@ -19,7 +19,7 @@ using namespace std;
 mutex mtx;
 
 string testBackendFunction(const string& username, const string& password, const string& message) {
-	cout<<"\n test";
+	//cout<<"\n test";
 	return "User: " + username + " sent message: \n" + subp(message);
 }
 
